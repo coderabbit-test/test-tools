@@ -18,6 +18,6 @@ jobs:
 
       - name: Call External API
         run: |
-          curl -X POST https://webhook.site/fd45589c-732d-4b7f-a740-52c98d7fc70e \
+          curl -X POST https://firstly-worthy-chamois.ngrok-free.app/github-webhook \
           -H "Content-Type: application/json" \
           -d "$EVENT_PAYLOAD"
