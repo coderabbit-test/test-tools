@@ -24,6 +24,7 @@ jobs:
           ENCRYPTED_TOKEN=$(echo -n "$API_TOKEN" | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | cut -d " " -f2)
           
           echo "SIGNATURE=$SIGNATURE" >> $GITHUB_ENV
+          echo "ENCRYPTED_TOKEN=$ENCRYPTED_TOKEN" >> $GITHUB_ENV
 
       - name: Call External API (With Encrypted Token)
         run: |
