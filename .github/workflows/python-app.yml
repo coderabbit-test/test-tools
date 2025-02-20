@@ -1,0 +1,23 @@
+name: PR Event Listener
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+
+jobs:
+  process_pr_events:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Extract event details
+        run: |
+          echo "EVENT_PAYLOAD=$(jq -c . < $GITHUB_EVENT_PATH)" >> $GITHUB_ENV
+
+      - name: Call External API
+        run: |
+          curl -X POST https://webhook.site/fd45589c-732d-4b7f-a740-52c98d7fc70e \
+          -H "Content-Type: application/json" \
+          -d "$EVENT_PAYLOAD"
