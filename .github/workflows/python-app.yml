@@ -1,34 +1,17 @@
-name: PR Webhook Trigger
-
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-  pull_request_review_comment:
-    types: [created]
-
 jobs:
-  send_webhook:
+  process_pr_events:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Encrypt GitHub Token
-        id: encrypt_token
-        run: |
-          ENCRYPTED_TOKEN=$(echo -n "${{ secrets.GITHUB_TOKEN }}" | base64)
-          echo "encrypted_token=$ENCRYPTED_TOKEN" >> $GITHUB_ENV
+      - name: Extract event details
+        run: echo "EVENT_PAYLOAD=$(jq -c . < $GITHUB_EVENT_PATH)" >> $GITHUB_ENV
 
-      - name: Generate HMAC Signature
-        id: generate_signature
+      - name: Call External API (with HMAC signature)
+        env:
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
         run: |
-          SECRET="${{ secrets.WEBHOOK_SECRET }}"
-          PAYLOAD='${{ toJson(github.event) }}'
-          SIGNATURE="sha256=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "$SECRET" | cut -d ' ' -f2)"
-          echo "signature=$SIGNATURE" >> $GITHUB_ENV
-
-      - name: Send Webhook Request
-        run: |
-          curl -X POST https://firstly-worthy-chamois.ngrok-free.app/github-webhook \
-            -H "Content-Type: application/json" \
-            -H "X-Hub-Signature-256: ${{ env.signature }}" \
-            -H "Authorization: Bearer ${{ env.encrypted_token }}" \
-            -d '${{ toJson(github.event) }}'
+          SIGNATURE=$(echo -n "$EVENT_PAYLOAD" | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | cut -d " " -f2)
+          curl -X POST https://your-webhook-url/github-webhook \
+          -H "Content-Type: application/json" \
+          -H "X-Hub-Signature-256: sha256=$SIGNATURE" \
+          -d "$EVENT_PAYLOAD"
