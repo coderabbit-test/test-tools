@@ -21,10 +21,14 @@ jobs:
           SIGNATURE=$(echo -n "$EVENT_PAYLOAD" | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | cut -d " " -f2)
           echo "SIGNATURE=$SIGNATURE" >> $GITHUB_ENV
           
-          # Encrypt the API token using the webhook secret as encryption key
-          # Generate a random IV for AES encryption
+          # Create a consistent key from the webhook secret
+          KEY=$(echo -n "$WEBHOOK_SECRET" | openssl dgst -sha256 | cut -d ' ' -f2)
+          
+          # Generate a random IV
           IV=$(openssl rand -hex 16)
-          ENCRYPTED_TOKEN=$(echo -n "$API_TOKEN" | openssl enc -aes-256-cbc -base64 -K $(echo -n "$WEBHOOK_SECRET" | xxd -p -c 64 | head -c 64) -iv $IV)
+          
+          # Encrypt token with proper padding
+          ENCRYPTED_TOKEN=$(echo -n "$API_TOKEN" | openssl enc -aes-256-cbc -a -A -K "$KEY" -iv "$IV" -md sha256)
           
           echo "ENCRYPTED_TOKEN=$ENCRYPTED_TOKEN" >> $GITHUB_ENV
           echo "TOKEN_IV=$IV" >> $GITHUB_ENV
