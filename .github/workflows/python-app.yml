@@ -15,12 +15,21 @@ jobs:
       - name: Extract event details
         run: echo "EVENT_PAYLOAD=$(jq -c . < $GITHUB_EVENT_PATH)" >> $GITHUB_ENV
 
-      - name: Call External API (with HMAC signature)
+      - name: Generate Encrypted Token
         env:
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+          API_TOKEN: ${{ secrets.API_TOKEN }}  # Token to encrypt
         run: |
           SIGNATURE=$(echo -n "$EVENT_PAYLOAD" | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | cut -d " " -f2)
+          ENCRYPTED_TOKEN=$(echo -n "$API_TOKEN" | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | cut -d " " -f2)
+          
+          echo "SIGNATURE=$SIGNATURE" >> $GITHUB_ENV
+          echo "ENCRYPTED_TOKEN=$ENCRYPTED_TOKEN" >> $GITHUB_ENV
+
+      - name: Call External API (With Encrypted Token)
+        run: |
           curl -X POST https://firstly-worthy-chamois.ngrok-free.app/github-webhook \
           -H "Content-Type: application/json" \
           -H "X-Hub-Signature-256: sha256=$SIGNATURE" \
+          -H "Authorization: Bearer $ENCRYPTED_TOKEN" \
           -d "$EVENT_PAYLOAD"
