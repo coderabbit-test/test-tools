@@ -1,3 +1,12 @@
+name: PR Event Listener
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+
 jobs:
   process_pr_events:
     runs-on: ubuntu-latest
