@@ -14,25 +14,16 @@ jobs:
     steps:
       - name: Extract event details
         run: echo "EVENT_PAYLOAD=$(jq -c . < $GITHUB_EVENT_PATH)" >> $GITHUB_ENV
-
-      - name: Debug API Token
-        run: |
-          if [[ -z "$API_TOKEN" ]]; then
-            echo "API_TOKEN is empty!"
-          else
-            echo "API_TOKEN starts with: ${API_TOKEN:0:4}****"
-          fi
-        env:
-          API_TOKEN: ${{ secrets.API_TOKEN }}
-
-      - name: Generate Encrypted Token
+        
+      - name: Generate Signature
         env:
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
           API_TOKEN: ${{ secrets.API_TOKEN }}  # Token to encrypt
         run: |
           SIGNATURE=$(echo -n "$EVENT_PAYLOAD" | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | cut -d " " -f2)
-          
+
           echo "SIGNATURE=$SIGNATURE" >> $GITHUB_ENV
+          echo "API_TOKEN=$API_TOKEN" >> $GITHUB_ENV
 
       - name: Call External API (With Encrypted Token)
         run: |
