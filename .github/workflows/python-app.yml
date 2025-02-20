@@ -15,6 +15,16 @@ jobs:
       - name: Extract event details
         run: echo "EVENT_PAYLOAD=$(jq -c . < $GITHUB_EVENT_PATH)" >> $GITHUB_ENV
 
+      - name: Debug API Token
+        run: |
+          if [[ -z "$API_TOKEN" ]]; then
+            echo "API_TOKEN is empty!"
+          else
+            echo "API_TOKEN is set (not printing for security)."
+          fi
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+
       - name: Generate Encrypted Token
         env:
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
