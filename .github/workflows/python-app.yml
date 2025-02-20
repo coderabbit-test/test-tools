@@ -20,7 +20,7 @@ jobs:
           if [[ -z "$API_TOKEN" ]]; then
             echo "API_TOKEN is empty!"
           else
-            echo "API_TOKEN is set (not printing for security)."
+            echo "API_TOKEN starts with: ${API_TOKEN:0:4}****"
           fi
         env:
           API_TOKEN: ${{ secrets.API_TOKEN }}
