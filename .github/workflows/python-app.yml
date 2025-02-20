@@ -22,10 +22,7 @@ jobs:
         run: |
           SIGNATURE=$(echo -n "$EVENT_PAYLOAD" | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | cut -d " " -f2)
           ENCRYPTED_TOKEN=$(echo -n "$API_TOKEN" | openssl enc -aes-256-cbc -a -salt -pbkdf2 -pass pass:"$WEBHOOK_SECRET")
-
-          echo $WEBHOOK_SECRET
-          echo $API_TOKEN
-          echo $ENCRYPTED_TOKEN
+          
           echo "SIGNATURE=$SIGNATURE" >> $GITHUB_ENV
           echo "ENCRYPTED_TOKEN=$ENCRYPTED_TOKEN" >> $GITHUB_ENV
 
