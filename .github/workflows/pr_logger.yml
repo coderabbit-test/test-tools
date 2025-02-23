@@ -1,0 +1,25 @@
+name: PR Event Logger
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, review_requested]
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  log-event:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Run event logger
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+        run: python .github/scripts/log_event.py
