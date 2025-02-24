@@ -1,0 +1,26 @@
+name: Print Secrets for Debugging
+
+on:
+  push:
+    branches:
+      - main  # This will trigger the action on pushes to the main branch
+
+jobs:
+  print-secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python (optional, if you want to run Python scripts later)
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Print secrets (lengths for debugging)
+        run: |
+          echo "ORG_TOKEN length: ${#ORG_TOKEN}"
+          echo "WEBHOOK_SECRET length: ${#WEBHOOK_SECRET}"
+        env:
+          ORG_TOKEN: ${{ secrets.ORG_TOKEN }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
