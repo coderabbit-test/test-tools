@@ -16,21 +16,25 @@ def nth_fibonacci_util(n, memo):
     return memo[n]
 
 
-# Wrapper function that handles both initialization
-# and Fibonacci calculation
 def nth_fibonacci(n):
-
-    # Create a memoization table and initialize with -1
-    memo = [-1] * (n + 1)
-
-    # Call the utility function
-    return nth_fibonacci_util(n, memo)
-
-
-if __name__ == "__main__":
-    n = 5
-    result = nth_fibonacci(n)
-    print(result)
+    """
+    Calculate the nth Fibonacci number.
+    
+    Args:
+        n: A non-negative integer
+    
+    Returns:
+        The nth number in the Fibonacci sequence
+    
+    Raises:
+        TypeError: If n is not an integer
+        ValueError: If n is negative
+    """
+    if not isinstance(n, int):
+        raise TypeError("Input must be an integer")
+    if n < 0:
+        raise ValueError("Input must be non-negative")
+    return nth_fibonacci_util(n)
 
 
 
