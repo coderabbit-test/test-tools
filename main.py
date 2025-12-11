@@ -18,7 +18,7 @@ def nth_fibonacci_util(n, memo):
 
     # Base case: if n is 0 or 1, return n
     if n <= 1:
-        return n
+        return m
 
     # Check if the result is already in the memo table
     if memo[n] != -1:
